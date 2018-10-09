@@ -1,5 +1,6 @@
 package com.capgemini.orderapp.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -11,49 +12,51 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.capgemini.orderapp.Exception.OrderAlreadyRegisteredException;
 import com.capgemini.orderapp.entity.Order;
+import com.capgemini.orderapp.exception.OrderAlreadyRegisteredException;
 import com.capgemini.orderapp.service.OrderService;
 
+@RestController
 public class OrderController {
-	
-	Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	static Logger logger = LoggerFactory.getLogger(OrderController.class);
+
 	@Autowired
 	private OrderService orderService;
 
-	@PostMapping("/order")
+	@PostMapping("/v1/order")
 	public ResponseEntity<Order> addOrder(@RequestBody Order order) throws OrderAlreadyRegisteredException {
-		logger.info("Created");
-		return new ResponseEntity<Order>(orderService.addOrder(order), HttpStatus.CREATED);
+		logger.info("Add order  /v1/order");
+		return new ResponseEntity<Order>(orderService.addOrder(order), HttpStatus.OK);
 	}
 
-
-	@PutMapping("/order")
-	public ResponseEntity<Order> editOrder(@RequestBody Order order) {
-		return new ResponseEntity<Order>(orderService.editOrder(order), HttpStatus.OK);
+	@GetMapping("/v1/order/{orderId}")
+	public ResponseEntity<Order> findOrderById(@PathVariable int orderId) {
+		logger.info("Get order   /v1/order/" + orderId);
+		return new ResponseEntity<Order>(orderService.findOrderById(orderId), HttpStatus.OK);
 	}
 
-	@GetMapping("/order/{orderId}")
-	public ResponseEntity<Order> findOrderById(@PathVariable int customerId) {
-		return new ResponseEntity<Order>(orderService.findOrderById(customerId), HttpStatus.OK);
+	@GetMapping("/v1/order/customer/{customerId}")
+	public ResponseEntity<List<Order>> findOrderByCustomerId(@PathVariable int customerId) {
+		logger.info("Get order   /v1/order/customer/" + customerId);
+		return new ResponseEntity<List<Order>>(orderService.findOrderByCustomerId(customerId), HttpStatus.OK);
 	}
 
-	@DeleteMapping("/order/orderId}")
-	public ResponseEntity<Order> deleteOrder(@PathVariable int customerId) {
-		Order customer = orderService.findOrderById(customerId);
-		orderService.deleteOrder(customer);
-		return new ResponseEntity<>(HttpStatus.OK);
+	@DeleteMapping("/v1/order/{orderId}")
+	public ResponseEntity<Order> deleteOrderById(@PathVariable int orderId) {
+		logger.info("Delete order     /v1/order/" + orderId);
+		Order order = orderService.findOrderById(orderId);
+		System.out.println(order);
+		orderService.deleteOrder(order);
+		return new ResponseEntity<Order>(HttpStatus.OK);
 	}
-	
-	@GetMapping("/orders")
-	public @ResponseBody ResponseEntity<List<Order>> getAllOrder() {
+
+	@GetMapping("/v1/orders")
+	public ResponseEntity<List<Order>> findAllOrder() {
+		logger.info("Get All orders    /v1/orders");
 		return new ResponseEntity<List<Order>>(orderService.getAllOrders(), HttpStatus.OK);
 	}
-
-
-
 }

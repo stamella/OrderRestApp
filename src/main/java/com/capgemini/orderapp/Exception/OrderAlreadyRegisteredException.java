@@ -1,4 +1,4 @@
-package com.capgemini.orderapp.Exception;
+package com.capgemini.orderapp.exception;
 
 public class OrderAlreadyRegisteredException extends Exception {
 	

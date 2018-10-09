@@ -1,11 +1,22 @@
 package com.capgemini.orderapp.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.capgemini.orderapp.entity.Order;
 
-public interface OrderRepository extends JpaRepository<Order, Integer>{
+public interface OrderRepository extends MongoRepository<Order, Integer> {
+
+	@Query("{ 'customerId' : ?0}")
+	public List<Order> findByCustomerId(int customerId);
+	
+	
+	
+}
 	
 	
 
-}
+
